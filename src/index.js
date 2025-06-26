@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-
-const App = () => <h1>Hello, Yucho!</h1>;
+import MediaSalesPage from "./MediaSalesPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App />);
+root.render(<MediaSalesPage />);
