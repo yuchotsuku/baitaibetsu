@@ -11,8 +11,7 @@ const formatMonth = (dateString) => {
     const mm = String(date.getMonth() + 1).padStart(2, '0');
     return `${yyyy}-${mm}`;
   }
-  const match = dateString.match(/^(
-    \d{4})[/-](\d{2})/);
+  const match = dateString.match(/^(\d{4})[/-](\d{2})/);
   if (match) {
     return `${match[1]}-${match[2]}`;
   }
