@@ -6,16 +6,23 @@ import React, { useEffect, useState } from 'react';
 // ✅ 契約月 "2025/06/01" → "2025-06" に変換する関数（安全性高い）
 const formatMonth = (dateString) => {
   if (!dateString) return '';
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date)) return '';
+  // ① 日付形式ならそのまま Date に
+  const date = new Date(dateString);
+  if (!isNaN(date)) {
     const yyyy = date.getFullYear();
     const mm = String(date.getMonth() + 1).padStart(2, '0');
     return `${yyyy}-${mm}`;
-  } catch {
-    return '';
   }
+
+  // ② それでもダメなら手動パース（例：2025/06/01）
+  const match = dateString.match(/^(\d{4})[/-](\d{2})/);
+  if (match) {
+    return `${match[1]}-${match[2]}`;
+  }
+
+  return '';
 };
+
 
 export default function MediaSalesPage() {
   const [data, setData] = useState([]);
