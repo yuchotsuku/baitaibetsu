@@ -58,12 +58,12 @@ const summaryList = Object.entries(introSummary).sort((a, b) => b[1] - a[1]);
 
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen font-sans">
-      <h1 className="text-3xl font-bold mb-6 text-center">🐻 媒体別売上ページ</h1>
+    <div ="p-6 bg-gray-50 min-h-screen font-sans">
+      <h1 ="text-3xl font-bold mb-6 text-center">🐻 媒体別売上ページ</h1>
 
-      <div className="flex flex-wrap gap-4 justify-center mb-6">
+      <div ="flex flex-wrap gap-4 justify-center mb-6">
         <select
-  className="rounded-full border border-gray-300 px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
+  className="rounded-full border border-pink-300 bg-white text-gray-700 px-5 py-2 text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all duration-200"
   onChange={e => setSelectedMonth(e.target.value)}
 >
 
