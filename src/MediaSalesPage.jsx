@@ -2,7 +2,12 @@
 // データソース：https://script.google.com/macros/s/AKfycbzgP95iX3fGCHDECDyYeTZPsva2IKloBlbj5R95r5Gm-AGkZu8ak66xGrJr_o5xV3NS_g/exec
 
 import React, { useEffect, useState } from 'react';
-
+const formatMonth = (dateString) => {
+  const date = new Date(dateString);
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  return `${yyyy}-${mm}`;
+};
 export default function MediaSalesPage() {
   const [data, setData] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState('');
@@ -16,12 +21,12 @@ export default function MediaSalesPage() {
   }, []);
 
   const filtered = data.filter(item => {
-    const monthMatch = selectedMonth ? item['契約月']?.startsWith(selectedMonth) : true;
+    const monthMatch = selectedMonth ? formatMonth(item['契約月']) === selectedMonth : true;
     const storeMatch = selectedStore ? item['店舗名'] === selectedStore : true;
     return monthMatch && storeMatch;
   });
 
-  const months = [...new Set(data.map(d => d['契約月']?.substring(0, 7)))].sort();
+  const months = [...new Set(data.map(d => formatMonth(d['契約月'])))].sort();
   const stores = [...new Set(data.map(d => d['店舗名']))].sort();
 
   return (
