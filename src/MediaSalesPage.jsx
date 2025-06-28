@@ -6,23 +6,18 @@ import React, { useEffect, useState } from 'react';
 // ✅ 契約月 "2025/06/01" → "2025-06" に変換する関数（安全性高い）
 const formatMonth = (dateString) => {
   if (!dateString) return '';
-  // ① 日付形式ならそのまま Date に
   const date = new Date(dateString);
   if (!isNaN(date)) {
     const yyyy = date.getFullYear();
     const mm = String(date.getMonth() + 1).padStart(2, '0');
     return `${yyyy}-${mm}`;
   }
-
-  // ② それでもダメなら手動パース（例：2025/06/01）
   const match = dateString.match(/^(\d{4})[/-](\d{2})/);
   if (match) {
     return `${match[1]}-${match[2]}`;
   }
-
   return '';
 };
-
 
 export default function MediaSalesPage() {
   const [data, setData] = useState([]);
@@ -36,7 +31,6 @@ export default function MediaSalesPage() {
       .catch(err => console.error(err));
   }, []);
 
-  // 絞り込みロジック
   const filtered = data.filter(item => {
     const itemMonth = formatMonth(item['契約月']);
     const monthMatch = selectedMonth ? itemMonth === selectedMonth : true;
@@ -44,11 +38,9 @@ export default function MediaSalesPage() {
     return monthMatch && storeMatch;
   });
 
-  // 月と店舗の選択肢
   const months = [...new Set(data.map(d => formatMonth(d['契約月'])))].filter(Boolean).sort();
   const stores = [...new Set(data.map(d => d['店舗名']))].filter(Boolean).sort();
 
-  // 紹介者ごとの集計
   const introSummary = {};
   filtered.forEach(item => {
     const key = item['紹介者'] || '未記入';
@@ -102,28 +94,28 @@ export default function MediaSalesPage() {
           </div>
         </div>
 
-        <table className="min-w-full text-sm border bg-white shadow rounded-lg overflow-hidden mt-8">
-          <thead className="bg-pink-100 text-gray-800">
-            <tr>
-              <th className="border p-3">契約月</th>
-              <th className="border p-3">紹介者</th>
-              <th className="border p-3">店舗名</th>
-              <th className="border p-3">合計売上</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((item, idx) => (
-              <tr key={idx} className="hover:bg-pink-50">
-                <td className="border p-2 text-center">{formatMonth(item['契約月'])}</td>
-                <td className="border p-2 text-center">{item['紹介者']}</td>
-                <td className="border p-2 text-center">{item['店舗名']}</td>
-                <td className="border p-2 text-right font-semibold text-pink-600">
-                  {Number(item['合計売上']).toLocaleString()} 円
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {/* カードスタイルの売上一覧 */}
+        <div className="grid gap-4 mt-8">
+          {filtered.map((item, idx) => (
+            <div
+              key={idx}
+              className="bg-white rounded-2xl shadow p-4 flex flex-col sm:flex-row sm:items-center justify-between hover:shadow-md transition"
+            >
+              <div className="text-sm text-gray-600">
+                <span className="font-semibold text-pink-500">契約月：</span>{formatMonth(item['契約月'])}
+              </div>
+              <div className="text-sm text-gray-600">
+                <span className="font-semibold text-pink-500">紹介者：</span>{item['紹介者'] || '未記入'}
+              </div>
+              <div className="text-sm text-gray-600">
+                <span className="font-semibold text-pink-500">店舗名：</span>{item['店舗名']}
+              </div>
+              <div className="text-sm text-pink-700 font-bold">
+                {Number(item['合計売上']).toLocaleString()} 円
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
