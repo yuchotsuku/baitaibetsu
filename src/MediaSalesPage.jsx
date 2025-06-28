@@ -6,18 +6,23 @@ import React, { useEffect, useState } from 'react';
 // ✅ 契約月 "2025/06/01" → "2025-06" に変換する関数（安全性高い）
 const formatMonth = (dateString) => {
   if (!dateString) return '';
+  // ① 日付形式ならそのまま Date に
   const date = new Date(dateString);
   if (!isNaN(date)) {
     const yyyy = date.getFullYear();
     const mm = String(date.getMonth() + 1).padStart(2, '0');
     return `${yyyy}-${mm}`;
   }
+
+  // ② それでもダメなら手動パース（例：2025/06/01）
   const match = dateString.match(/^(\d{4})[/-](\d{2})/);
   if (match) {
     return `${match[1]}-${match[2]}`;
   }
+
   return '';
 };
+
 
 export default function MediaSalesPage() {
   const [data, setData] = useState([]);
@@ -31,6 +36,7 @@ export default function MediaSalesPage() {
       .catch(err => console.error(err));
   }, []);
 
+  // 絞り込みロジック
   const filtered = data.filter(item => {
     const itemMonth = formatMonth(item['契約月']);
     const monthMatch = selectedMonth ? itemMonth === selectedMonth : true;
@@ -38,57 +44,65 @@ export default function MediaSalesPage() {
     return monthMatch && storeMatch;
   });
 
+  // 月と店舗の選択肢
   const months = [...new Set(data.map(d => formatMonth(d['契約月'])))].filter(Boolean).sort();
   const stores = [...new Set(data.map(d => d['店舗名']))].filter(Boolean).sort();
+　// 紹介者ごとの集計
+const introSummary = {};
+filtered.forEach(item => {
+  const key = item['紹介者'] || '未記入';
+  const amount = Number(item['合計売上']) || 0;
+  introSummary[key] = (introSummary[key] || 0) + amount;
+});
+const summaryList = Object.entries(introSummary).sort((a, b) => b[1] - a[1]);
 
-  const introSummary = {};
-  filtered.forEach(item => {
-    const key = item['紹介者'] || '未記入';
-    const amount = Number(item['合計売上']) || 0;
-    introSummary[key] = (introSummary[key] || 0) + amount;
-  });
-  const summaryList = Object.entries(introSummary).sort((a, b) => b[1] - a[1]);
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen font-sans">
-      <h1 className="text-3xl font-bold mb-6 text-center">🐻 媒体別売上ページ</h1>
+    <div ="p-6 bg-gray-50 min-h-screen font-sans">
+      <h1 ="text-3xl font-bold mb-6 text-center">🐻 媒体別売上ページ</h1>
 
-      <div className="flex flex-wrap gap-4 justify-center mb-6">
+      <div ="flex flex-wrap gap-4 justify-center mb-6">
         <select
-          className="rounded-full border border-gray-300 px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
-          onChange={e => setSelectedMonth(e.target.value)}
-        >
+  className="rounded-full border border-pink-300 bg-white text-gray-700 px-5 py-2 text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all duration-200"
+  onChange={e => setSelectedMonth(e.target.value)}
+>
+
           <option value=''>🗓 全期間</option>
           {months.map(month => <option key={month} value={month}>{month}</option>)}
         </select>
         <select
-          className="rounded-full border border-gray-300 px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
-          onChange={e => setSelectedStore(e.target.value)}
-        >
+  className="rounded-full border border-gray-300 px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
+  onChange={e => setSelectedStore(e.target.value)}
+>
+
           <option value=''>🏪 全店舗</option>
           {stores.map(store => <option key={store} value={store}>{store}</option>)}
         </select>
       </div>
 
-      {/* カード形式の紹介者売上ランキング */}
-      <div className="mt-8 space-y-4">
-        <h2 className="text-2xl font-bold text-center mb-4">📊 紹介者別売上ランキング</h2>
+      <div className="overflow-x-auto">
+      {/* 紹介者ごとの合計売上表 */}
+<div className="mt-8">
+  <h2 className="text-xl font-semibold mb-3 text-center">🎯 紹介者ごとの合計売上</h2>
+  <div className="overflow-x-auto">
+    <table className="min-w-full text-sm border bg-white shadow rounded-lg overflow-hidden">
+      <thead className="bg-blue-100 text-gray-800">
+        <tr>
+          <th className="border p-3">紹介者</th>
+          <th className="border p-3">合計売上</th>
+        </tr>
+      </thead>
+      <tbody>
         {summaryList.map(([name, total], idx) => (
-          <div
-            key={idx}
-            className={`rounded-2xl p-4 shadow-md text-gray-800 transition ${
-              idx === 0 ? 'bg-blue-300' : idx === 1 || idx === 2 ? 'bg-yellow-200' : idx === 3 ? 'bg-purple-200' : 'bg-sky-200'
-            }`}
-          >
-            <p className="text-lg font-bold mb-1">{idx + 1}位</p>
-            <p className="text-xl">{name}</p>
-            <p className="text-lg font-semibold text-gray-700">￥{total.toLocaleString()}</p>
-          </div>
+          <tr key={idx} className="hover:bg-blue-50">
+            <td className="border p-2 text-center">{name}</td>
+            <td className="border p-2 text-right font-semibold text-blue-600">{total.toLocaleString()} 円</td>
+          </tr>
         ))}
-      </div>
-
-      {/* 表形式の全データ */}
-      <div className="overflow-x-auto mt-10">
+      </tbody>
+    </table>
+  </div>
+</div>
         <table className="min-w-full text-sm border bg-white shadow rounded-lg overflow-hidden">
           <thead className="bg-pink-100 text-gray-800">
             <tr>
