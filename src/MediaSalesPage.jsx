@@ -72,6 +72,28 @@ export default function MediaSalesPage() {
       </div>
 
       <div className="overflow-x-auto">
+      {/* 紹介者ごとの合計売上表 */}
+<div className="mt-8">
+  <h2 className="text-xl font-semibold mb-3 text-center">🎯 紹介者ごとの合計売上</h2>
+  <div className="overflow-x-auto">
+    <table className="min-w-full text-sm border bg-white shadow rounded-lg overflow-hidden">
+      <thead className="bg-blue-100 text-gray-800">
+        <tr>
+          <th className="border p-3">紹介者</th>
+          <th className="border p-3">合計売上</th>
+        </tr>
+      </thead>
+      <tbody>
+        {summaryList.map(([name, total], idx) => (
+          <tr key={idx} className="hover:bg-blue-50">
+            <td className="border p-2 text-center">{name}</td>
+            <td className="border p-2 text-right font-semibold text-blue-600">{total.toLocaleString()} 円</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
         <table className="min-w-full text-sm border bg-white shadow rounded-lg overflow-hidden">
           <thead className="bg-pink-100 text-gray-800">
             <tr>
