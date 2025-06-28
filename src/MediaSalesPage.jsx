@@ -3,10 +3,9 @@
 
 import React, { useEffect, useState } from 'react';
 const formatMonth = (dateString) => {
-  const date = new Date(dateString);
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  return `${yyyy}-${mm}`;
+  if (!dateString) return '';
+  const [year, month] = dateString.split('/'); // "2025/06"
+  return `${year}-${month.padStart(2, '0')}`;
 };
 export default function MediaSalesPage() {
   const [data, setData] = useState([]);
