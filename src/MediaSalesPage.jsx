@@ -47,6 +47,14 @@ export default function MediaSalesPage() {
   // 月と店舗の選択肢
   const months = [...new Set(data.map(d => formatMonth(d['契約月'])))].filter(Boolean).sort();
   const stores = [...new Set(data.map(d => d['店舗名']))].filter(Boolean).sort();
+　// 紹介者ごとの集計
+　const introSummary = {};
+　filtered.forEach(item => {
+  const key = item['紹介者'] || '未記入';
+  const amount = Number(item['合計売上']) || 0;
+  introSummary[key] = (introSummary[key] || 0) + amount;
+});
+　const summaryList = Object.entries(introSummary).sort((a, b) => b[1] - a[1]);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen font-sans">
