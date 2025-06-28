@@ -2,11 +2,21 @@
 // データソース：https://script.google.com/macros/s/AKfycbzgP95iX3fGCHDECDyYeTZPsva2IKloBlbj5R95r5Gm-AGkZu8ak66xGrJr_o5xV3NS_g/exec
 
 import React, { useEffect, useState } from 'react';
+
+// ✅ 契約月 "2025/06/01" → "2025-06" に変換する関数（安全性高い）
 const formatMonth = (dateString) => {
   if (!dateString) return '';
-  const [year, month] = dateString.split('/'); // "2025/06"
-  return `${year}-${month.padStart(2, '0')}`;
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date)) return '';
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    return `${yyyy}-${mm}`;
+  } catch {
+    return '';
+  }
 };
+
 export default function MediaSalesPage() {
   const [data, setData] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState('');
@@ -19,14 +29,17 @@ export default function MediaSalesPage() {
       .catch(err => console.error(err));
   }, []);
 
+  // 絞り込みロジック
   const filtered = data.filter(item => {
-    const monthMatch = selectedMonth ? formatMonth(item['契約月']) === selectedMonth : true;
+    const itemMonth = formatMonth(item['契約月']);
+    const monthMatch = selectedMonth ? itemMonth === selectedMonth : true;
     const storeMatch = selectedStore ? item['店舗名'] === selectedStore : true;
     return monthMatch && storeMatch;
   });
 
-  const months = [...new Set(data.map(d => formatMonth(d['契約月'])))].sort();
-  const stores = [...new Set(data.map(d => d['店舗名']))].sort();
+  // 月と店舗の選択肢
+  const months = [...new Set(data.map(d => formatMonth(d['契約月'])))].filter(Boolean).sort();
+  const stores = [...new Set(data.map(d => d['店舗名']))].filter(Boolean).sort();
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen font-sans">
@@ -56,10 +69,12 @@ export default function MediaSalesPage() {
           <tbody>
             {filtered.map((item, idx) => (
               <tr key={idx} className="hover:bg-pink-50">
-                <td className="border p-2 text-center">{item['契約月']?.substring(0, 7)}</td>
+                <td className="border p-2 text-center">{formatMonth(item['契約月'])}</td>
                 <td className="border p-2 text-center">{item['紹介者']}</td>
                 <td className="border p-2 text-center">{item['店舗名']}</td>
-                <td className="border p-2 text-right font-semibold text-pink-600">{Number(item['合計売上']).toLocaleString()} 円</td>
+                <td className="border p-2 text-right font-semibold text-pink-600">
+                  {Number(item['合計売上']).toLocaleString()} 円
+                </td>
               </tr>
             ))}
           </tbody>
