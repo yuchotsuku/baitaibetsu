@@ -62,11 +62,19 @@ const summaryList = Object.entries(introSummary).sort((a, b) => b[1] - a[1]);
       <h1 className="text-3xl font-bold mb-6 text-center">🐻 媒体別売上ページ</h1>
 
       <div className="flex flex-wrap gap-4 justify-center mb-6">
-        <select className="border rounded-lg p-2 shadow-sm" onChange={e => setSelectedMonth(e.target.value)}>
+        <select
+  className="rounded-full border border-gray-300 px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
+  onChange={e => setSelectedMonth(e.target.value)}
+>
+
           <option value=''>🗓 全期間</option>
           {months.map(month => <option key={month} value={month}>{month}</option>)}
         </select>
-        <select className="border rounded-lg p-2 shadow-sm" onChange={e => setSelectedStore(e.target.value)}>
+        <select
+  className="rounded-full border border-gray-300 px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
+  onChange={e => setSelectedStore(e.target.value)}
+>
+
           <option value=''>🏪 全店舗</option>
           {stores.map(store => <option key={store} value={store}>{store}</option>)}
         </select>
